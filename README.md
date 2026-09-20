@@ -1,485 +1,623 @@
-# DocFlow
+<div align="center">
 
-### Turn an unstructured manuscript into a publication-ready document — locally.
+# DOCFLOW
 
-**DocFlow** is an offline ML-powered document formatting system that understands the structure of a `.docx` manuscript and automatically transforms it into a consistent, publication-ready format.
+### **From manuscript chaos → structured, publication-ready DOCX.**
 
-Instead of manually identifying titles, headings, paragraphs, references, captions, figures, tables, and lists, DocFlow analyzes the document structure, classifies each element, applies the appropriate formatting rules, validates the result, and produces a new `.docx` file.
+**An offline ML + rule-based document intelligence engine for automatic manuscript formatting.**
 
-> **Write the content. DocFlow handles the typesetting.**
+<br>
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Python-3.x-3776AB?style=for-the-badge&logo=python&logoColor=white" />
-  <img src="https://img.shields.io/badge/scikit--learn-ML-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white" />
-  <img src="https://img.shields.io/badge/Word-Add--in-2B579A?style=for-the-badge&logo=microsoftword&logoColor=white" />
-  <img src="https://img.shields.io/badge/Offline-First-111827?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/.DOCX-Supported-4285F4?style=for-the-badge" />
-</p>
+[![Python](https://img.shields.io/badge/Python-3.x-3776AB?style=flat-square&logo=python&logoColor=white)](#-technology)
+[![scikit-learn](https://img.shields.io/badge/scikit--learn-Random%20Forest-F7931E?style=flat-square&logo=scikit-learn&logoColor=white)](#-machine-learning)
+[![DOCX](https://img.shields.io/badge/DOCX-OOXML-2B579A?style=flat-square&logo=microsoftword&logoColor=white)](#-document-processing)
+[![Offline](https://img.shields.io/badge/Processing-Local%20%26%20Offline-111827?style=flat-square)](#-privacy--offline-first)
+[![Word Add-in](https://img.shields.io/badge/Microsoft%20Word-Add--in-2B579A?style=flat-square&logo=microsoftword&logoColor=white)](#-microsoft-word-add-in)
 
----
+<br>
 
-## ✦ Why DocFlow?
+> **DocFlow reads the structure of a manuscript, understands what each element is, formats it according to a publication specification, and verifies that the content survived the transformation.**
 
-Formatting a long manuscript is more than changing fonts.
-
-A real document contains different structural elements:
-
-`Title` · `Author` · `Chapter` · `Subheading` · `Body` · `Table` · `Figure` · `Caption` · `Reference` · `List`
-
-These elements need different formatting rules.
-
-DocFlow automatically identifies these structures and applies a consistent publication specification — without rewriting the document's content.
-
-### From this
-
-```text
-Raw manuscript
-    ↓
-Mixed fonts
-    ↓
-Inconsistent headings
-    ↓
-Irregular spacing
-    ↓
-Manual formatting
-    ↓
-Repeated corrections
-```
-
-### To this
-
-```text
-DOCX
- ↓
-Structure Detection
- ↓
-ML Classification
- ↓
-Rule-based Verification
- ↓
-Publication Formatting
- ↓
-Integrity Validation
- ↓
-Formatted DOCX
-```
+</div>
 
 ---
 
-# ✨ What DocFlow Does
+## ◈ Index
 
-| Capability | Description |
+**Jump directly to any part of the project:**
+
+| | Section | What you'll find |
+|---|---|---|
+| 🎯 | [The Problem](#-the-problem) | Why manuscript formatting is still manual |
+| ✦ | [What DocFlow Does](#-what-docflow-does) | Product capabilities |
+| ⚡ | [Quick Look](#-quick-look) | The complete processing flow |
+| 🧠 | [Machine Learning](#-machine-learning) | Features, classes and evaluation |
+| 🛡️ | [Hybrid Intelligence](#-hybrid-intelligence-ml--rules) | Why ML and deterministic rules work together |
+| 📐 | [Formatting Engine](#-formatting-engine) | Publication specification |
+| 🔐 | [Integrity Validation](#-integrity-validation) | How output correctness is checked |
+| 📊 | [Performance](#-performance) | Scale and throughput results |
+| 🖥️ | [Word Add-in](#-microsoft-word-add-in) | Run DocFlow inside Word |
+| 🌐 | [Standalone Mode](#-standalone-browser-mode) | Process DOCX without Word |
+| 📴 | [Privacy](#-privacy--offline-first) | Local processing architecture |
+| 🏗️ | [Architecture](#-architecture) | System design |
+| 🧰 | [Technology](#-technology) | Full stack |
+| 📁 | [Repository](#-repository-map) | Codebase structure |
+| 🚀 | [Installation](#-quick-start) | Get it running |
+| 🧪 | [Testing](#-testing--evaluation) | Samples, comparison and scale tests |
+| 📦 | [Packaging](#-packaging) | Standalone executable |
+| 🛣️ | [Roadmap](#-roadmap) | Planned extensions |
+
+---
+
+# 🎯 The Problem
+
+A manuscript can be **content-complete but formatting-inconsistent**.
+
+A long document may contain titles, authors, chapter headings, subheadings, body paragraphs, tables, figures, captions, references and lists — all mixed together and formatted differently.
+
+Traditional cleanup means manually finding those elements and repeatedly correcting:
+
+- typography
+- spacing
+- indentation
+- alignment
+- margins
+- heading hierarchy
+- figure/caption presentation
+- table formatting
+- references
+
+For large manuscripts, this becomes a repetitive **structure-recognition problem**, not simply a font-changing problem.
+
+### DocFlow's approach
+
+Instead of asking the user to manually identify every element:
+
+```text
+                    RAW MANUSCRIPT
+                          │
+                          ▼
+                 ┌─────────────────┐
+                 │ Understand DOCX │
+                 └────────┬────────┘
+                          ▼
+                 ┌─────────────────┐
+                 │ Identify roles  │
+                 └────────┬────────┘
+                          ▼
+                 ┌─────────────────┐
+                 │ Apply rules     │
+                 └────────┬────────┘
+                          ▼
+                 ┌─────────────────┐
+                 │ Validate output │
+                 └────────┬────────┘
+                          ▼
+                 PUBLICATION-READY DOCX
+```
+
+---
+
+# ✦ What DocFlow Does
+
+### One engine. Two ways to use it.
+
+| Capability | What happens |
 |---|---|
-| 🧠 **Document Structure Detection** | Identifies the semantic role of document elements |
-| 🤖 **ML Classification** | Classifies content into 10 document categories |
-| ⚙️ **Rule-Based Verification** | Applies deterministic structural checks on top of ML predictions |
-| 📐 **Automatic Typesetting** | Applies consistent fonts, spacing, indentation, margins and alignment |
-| 📊 **Table & Figure Handling** | Detects and formats tables, figures and captions separately |
-| 📚 **Reference Formatting** | Recognizes reference-style content and applies dedicated formatting |
-| 🔍 **Integrity Validation** | Checks that document content is preserved after formatting |
-| 👁️ **Before / After Proof** | Visually compare the original and formatted manuscript |
-| 📴 **Offline Processing** | Document processing happens locally |
-| 📝 **Word Integration** | Runs directly inside Microsoft Word through a task pane |
-| 🌐 **Standalone Mode** | Process `.docx` files without opening Word |
-| 📦 **Distributable Build** | Can be packaged as a standalone executable |
+| 🧠 **Structure Recognition** | Understands the semantic role of document elements |
+| 🤖 **ML Classification** | Predicts one of 10 manuscript element classes |
+| 🛡️ **Rule Verification** | Overrides predictions when document structure is explicit |
+| 🎨 **Automatic Typesetting** | Applies a fixed publication specification |
+| 📋 **Table & Figure Handling** | Treats tables, images and captions as structural elements |
+| 📚 **Reference Detection** | Identifies reference-style paragraphs |
+| 🔍 **Integrity Checks** | Verifies content and structure after formatting |
+| 👁️ **Before/After Proof** | Provides a visual comparison of raw vs formatted output |
+| 📴 **Local Processing** | Core parsing, classification and formatting happen locally |
+| 📝 **Word Integration** | Runs from a Microsoft Word task pane |
+| 🌐 **Standalone Mode** | Processes `.docx` files from Word or LibreOffice |
+| 📦 **Executable Build** | Can be packaged with PyInstaller |
 
 ---
 
-# 🧠 How It Works
+# ⚡ Quick Look
+
+## What happens when you click **Format Manuscript**?
 
 ```text
-                    ┌─────────────────────┐
-                    │   Input .DOCX       │
-                    └──────────┬──────────┘
+┌───────────────────────────────────────────────────────────────┐
+│                         INPUT .DOCX                           │
+└──────────────────────────────┬────────────────────────────────┘
                                │
                                ▼
-                 ┌─────────────────────────┐
-                 │  DOCX Parser            │
-                 │  Structure + Features   │
-                 └──────────┬──────────────┘
-                            │
-                            ▼
-                 ┌─────────────────────────┐
-                 │  ML Structure Classifier│
-                 │  10 document classes    │
-                 └──────────┬──────────────┘
-                            │
-                            ▼
-                 ┌─────────────────────────┐
-                 │ Rule-Based Verification │
-                 │ Structural overrides    │
-                 └──────────┬──────────────┘
-                            │
-                            ▼
-                 ┌─────────────────────────┐
-                 │  Formatting Engine      │
-                 │  Publication Rules      │
-                 └──────────┬──────────────┘
-                            │
-                            ▼
-                 ┌─────────────────────────┐
-                 │ Validation & Integrity  │
-                 │ Checks                  │
-                 └──────────┬──────────────┘
-                            │
-                            ▼
-                     Publication-Ready DOCX
+┌───────────────────────────────────────────────────────────────┐
+│  01  PARSE                                                    │
+│      Read paragraphs + tables in document order                │
+└──────────────────────────────┬────────────────────────────────┘
+                               │
+                               ▼
+┌───────────────────────────────────────────────────────────────┐
+│  02  EXTRACT                                                  │
+│      Convert document structure into 16 measurable features   │
+└──────────────────────────────┬────────────────────────────────┘
+                               │
+                               ▼
+┌───────────────────────────────────────────────────────────────┐
+│  03  CLASSIFY                                                 │
+│      Random Forest predicts the semantic role of each element │
+└──────────────────────────────┬────────────────────────────────┘
+                               │
+                               ▼
+┌───────────────────────────────────────────────────────────────┐
+│  04  VERIFY                                                   │
+│      Deterministic rules correct explicit structural cases    │
+└──────────────────────────────┬────────────────────────────────┘
+                               │
+                               ▼
+┌───────────────────────────────────────────────────────────────┐
+│  05  FORMAT                                                   │
+│      Apply publication typography + page layout               │
+└──────────────────────────────┬────────────────────────────────┘
+                               │
+                               ▼
+┌───────────────────────────────────────────────────────────────┐
+│  06  VALIDATE                                                 │
+│      Check OOXML, text, tables, labels and formatting         │
+└──────────────────────────────┬────────────────────────────────┘
+                               │
+                               ▼
+┌───────────────────────────────────────────────────────────────┐
+│                    FORMATTED .DOCX                            │
+└───────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-# 🔎 1. Document Understanding
+# 🧠 Machine Learning
 
-DocFlow parses the underlying DOCX structure instead of treating the manuscript as plain text.
+DocFlow does not treat a manuscript as a bag of words.
 
-For every relevant paragraph or table, it extracts a **16-feature structural representation**, including:
+For each relevant paragraph or table, the parser builds a **16-feature structural representation**.
 
-- Font size
-- Bold / italic state
-- Alignment
-- Left and first-line indentation
-- Paragraph spacing
-- Line spacing
-- Capitalization patterns
-- Numbering patterns
-- Word count
-- Position within the document
-- Word style
-- Image presence
-- Table presence
-
-This allows the system to reason about **how content is structured**, not just what the words say.
-
----
-
-# 🤖 2. ML-Based Classification
-
-The extracted features are passed to a trained scikit-learn classifier.
-
-DocFlow recognizes **10 document element types**:
+### Feature signals include
 
 ```text
-Title
-Author
-Chapter Heading
-Subheading
-Body Paragraph
-Table
-Figure
-Caption
-Reference
-List
+Typography
+├── Font size
+├── Bold / italic
+└── Word style
+
+Layout
+├── Alignment
+├── Left indentation
+├── First-line indentation
+├── Paragraph spacing
+└── Line spacing
+
+Content shape
+├── Word count
+├── Capitalization patterns
+└── Numbering patterns
+
+Document context
+├── Position in document
+├── Image presence
+└── Table presence
 ```
 
-The classifier processes document elements in **batches**, making the pipeline suitable for large manuscripts.
+These features are passed to the trained classifier in batches.
 
-### Model evaluation
+---
+
+## 10 document classes
+
+```text
+┌────────────────────┬────────────────────┐
+│ TITLE              │ AUTHOR             │
+├────────────────────┼────────────────────┤
+│ CHAPTER HEADING    │ SUBHEADING         │
+├────────────────────┼────────────────────┤
+│ BODY PARAGRAPH     │ TABLE              │
+├────────────────────┼────────────────────┤
+│ FIGURE             │ CAPTION            │
+├────────────────────┼────────────────────┤
+│ REFERENCE          │ LIST               │
+└────────────────────┴────────────────────┘
+```
+
+---
+
+## Model Evaluation
+
+The current evaluation set contains **182 samples**.
 
 | Metric | Result |
 |---|---:|
-| Test Accuracy | **96.7%** |
-| Cross-Validation Accuracy | **99.0% ± 1.3%** |
-| Evaluation Samples | **182** |
+| **Test Accuracy** | **96.7%** |
+| **Cross-Validation Accuracy** | **99.0% ± 1.3%** |
+| **Evaluation Samples** | **182** |
 
-> Evaluation results are based on the current training/evaluation dataset included in the repository.
+### Class-level evaluation
+
+The current report shows perfect test precision/recall for most structural classes, with the main confusion occurring between **Chapter Heading** and **Subheading**.
+
+The repository includes the generated confusion matrix:
+
+![DocFlow confusion matrix](model/artifacts/confusion_matrix.png)
+
+> These metrics describe the current training/evaluation dataset and should not be interpreted as a guarantee for arbitrary unseen document formats.
 
 ---
 
-# 🛡️ 3. ML + Rules Instead of ML Alone
+# 🛡️ Hybrid Intelligence: ML + Rules
 
-DocFlow does not blindly trust the classifier.
+A purely ML-driven formatter is not enough.
 
-A deterministic verification layer sits after ML classification and handles cases where document structure is explicit.
+Some structures are explicit in the DOCX itself.
 
 For example:
 
 ```text
-Is it an actual Word table?
-        ↓
-      Yes
-        ↓
-      TABLE
+Word table exists?
+        │
+       YES
+        ▼
+     TABLE
 ```
 
 ```text
-Does the paragraph contain an image?
-        ↓
-      Yes
-        ↓
+Paragraph contains an image?
+        │
+       YES
+        ▼
      FIGURE
 ```
 
-This creates a practical combination:
+DocFlow therefore combines:
 
-**Machine learning for flexible structure recognition + deterministic rules for predictable document structures.**
+### 🤖 Machine Learning
+
+Useful for recognizing patterns from formatting and document context.
+
+### ⚙️ Deterministic Rules
+
+Useful when the document structure provides strong evidence.
+
+```text
+              DOCUMENT
+                  │
+                  ▼
+        ┌───────────────────┐
+        │  ML CLASSIFIER    │
+        └─────────┬─────────┘
+                  │
+                  ▼
+        ┌───────────────────┐
+        │ RULE VERIFICATION │
+        └─────────┬─────────┘
+                  │
+                  ▼
+          FINAL STRUCTURE
+```
+
+This keeps the system more predictable than relying on a model alone.
 
 ---
 
-# 🎨 4. Publication Formatting Engine
+# 📐 Formatting Engine
 
-Once the document structure is identified, DocFlow applies formatting according to the element type.
+Once the structure is known, DocFlow applies a deterministic publication specification.
 
-### Body text
+## Body text
 
-- Times New Roman
-- 12 pt
-- Justified alignment
-- 1.5 line spacing
-- 1.27 cm first-line indentation
+| Property | Specification |
+|---|---|
+| Font | Times New Roman |
+| Size | 12 pt |
+| Alignment | Justified |
+| Line spacing | 1.5 |
+| First-line indent | 1.27 cm |
 
-### Page layout
+## Page layout
 
-- Top: 1.52 cm
-- Bottom: 1.52 cm
-- Left: 1.97 cm
-- Right: 1.96 cm
+| Margin | Value |
+|---|---:|
+| Top | 1.52 cm |
+| Bottom | 1.52 cm |
+| Left | 1.97 cm |
+| Right | 1.96 cm |
 
-### Structural elements
+## Structural formatting
 
 | Element | Formatting |
 |---|---|
-| Title | 20 pt, bold, centered |
-| Author | 13 pt, italic, centered |
-| Chapter Heading | 16 pt, bold |
-| Subheading | 12 pt, bold |
-| Body Paragraph | 12 pt, justified |
-| Figure | 11 pt, centered |
-| Caption | 10 pt, italic, centered |
-| Reference | 10 pt, justified |
-| List | 12 pt |
-| Table | 11 pt, centered, table grid |
+| **Title** | 20 pt, bold, centered |
+| **Author** | 13 pt, italic, centered |
+| **Chapter Heading** | 16 pt, bold |
+| **Subheading** | 12 pt, bold |
+| **Body Paragraph** | 12 pt, justified |
+| **Figure** | 11 pt, centered |
+| **Caption** | 10 pt, italic, centered |
+| **Reference** | 10 pt, justified |
+| **List** | 12 pt |
+| **Table** | 11 pt, centered, table grid |
+
+The formatter writes the resulting properties directly into the DOCX structure using `python-docx`.
 
 ---
 
-# 🔐 5. Content Integrity Comes First
+# 🔐 Integrity Validation
 
-Formatting should never mean rewriting.
+**Formatting is allowed to change presentation. It is not allowed to silently change the manuscript.**
 
-Before returning the output, DocFlow validates the generated document.
+After formatting, DocFlow validates:
+
+```text
+             OUTPUT DOCX
+                  │
+       ┌──────────┼──────────┐
+       ▼          ▼          ▼
+    OOXML       CONTENT    STRUCTURE
+    valid?      intact?     intact?
+       │          │          │
+       └──────────┼──────────┘
+                  ▼
+              VALIDATED
+```
 
 The validation layer checks:
 
 - ✅ Output is valid OOXML
-- ✅ Paragraph text remains unchanged
+- ✅ Paragraph text is preserved
 - ✅ Paragraph ordering is preserved
 - ✅ Table count is preserved
 - ✅ Table cell content is preserved
 - ✅ Every processed element receives a classification
-- ✅ Formatting is actually applied
+- ✅ Formatting is applied to processed elements
 
-DocFlow focuses on changing **presentation**, not **content**.
+This gives the pipeline a clear contract:
+
+> **Understand → transform presentation → verify preservation.**
 
 ---
 
-# ⚡ Performance
+# 📊 Performance
 
-DocFlow has also been tested against a large synthetic manuscript.
-
-### Scale test
+DocFlow was profiled against a large synthetic manuscript.
 
 | Metric | Result |
 |---|---:|
-| Elements processed | **4,675** |
-| Processing time | **5.95 s** |
-| Throughput | **785.3 elements/s** |
-| Peak memory | **257.6 MB** |
-| Validation | **PASSED** |
+| **Elements processed** | **4,675** |
+| **Wall-clock time** | **5.95 s** |
+| **Throughput** | **785.3 elements/s** |
+| **Peak memory** | **257.6 MB** |
+| **Validation** | **PASSED** |
 
-The pipeline performs classification in batches rather than making one model call per document element, reducing processing overhead on large manuscripts.
+### What was processed?
+
+```text
+Body Paragraph       2935
+Chapter Heading       435
+Subheading            360
+Caption               311
+Reference             237
+List                  229
+Table                 168
+```
+
+The profiler and scale-test scripts are included in the repository so these numbers can be reproduced.
 
 ---
 
-# 🖥️ Use It Where You Work
+# 🖥️ Microsoft Word Add-in
 
-DocFlow provides two interfaces using the same underlying processing engine.
-
-## Microsoft Word Add-in
-
-Run DocFlow directly inside Word.
+DocFlow can run **inside Word** through a task pane.
 
 ```text
-Open Manuscript
-      ↓
-Format Manuscript
-      ↓
-DocFlow processes the document
-      ↓
-Before / After Proof
-      ↓
-Download formatted DOCX
+┌──────────────────────────────┐
+│         MICROSOFT WORD       │
+│                              │
+│  Manuscript                  │
+│  ──────────────────────────  │
+│                              │
+│             ┌──────────────┐ │
+│             │   DOCFLOW    │ │
+│             │              │ │
+│             │ Format       │ │
+│             │ Manuscript   │ │
+│             │              │ │
+│             │ Proof  ◀───▶ │ │
+│             │              │ │
+│             │ ✓ Validated  │ │
+│             └──────────────┘ │
+└──────────────────────────────┘
 ```
 
-The Word task pane provides:
+### The add-in flow
 
-- One-click formatting
-- Processing status
-- Before/after comparison
-- Element count
-- Processing time
-- Validation status
-- Formatted `.docx` output
+1. Open the manuscript in Word
+2. Open the DocFlow task pane
+3. Click **Format Manuscript**
+4. DocFlow sends the document to the local engine
+5. Review the before/after proof
+6. Check the processing summary
+7. Download the formatted `.docx`
+
+The add-in and standalone interface use the **same underlying engine**.
 
 ---
 
-## Standalone Browser Mode
+# 🌐 Standalone Browser Mode
 
-Don't want to use the Word add-in?
-
-DocFlow also provides a standalone browser interface.
+No Word add-in required.
 
 ```text
-Choose .docx
-      ↓
-Process locally
-      ↓
-Review before / after
-      ↓
-Download formatted .docx
+        SELECT .DOCX
+             │
+             ▼
+       LOCAL DOCFLOW
+             │
+      ┌──────┴──────┐
+      ▼             ▼
+    RAW           FORMATTED
+      │             │
+      └──────┬──────┘
+             ▼
+       BEFORE / AFTER
+           PROOF
+             │
+             ▼
+      DOWNLOAD .DOCX
 ```
 
-It can process `.docx` files created using **Microsoft Word or LibreOffice Writer**.
+The standalone page accepts `.docx` files created with:
+
+- Microsoft Word
+- LibreOffice Writer
+
+This makes it useful both as a standalone workflow and as a fallback when Word add-in sideloading is unavailable.
 
 ---
 
-# 📴 Privacy & Offline-First Architecture
+# 📴 Privacy & Offline-First
 
-One of DocFlow's core design decisions is keeping document processing local.
+The **document-processing engine is local**.
 
 ```text
-             YOUR MACHINE
-┌───────────────────────────────────────┐
-│                                       │
-│  DOCX                                 │
-│   │                                   │
-│   ▼                                   │
-│  Parser                               │
-│   │                                   │
-│   ▼                                   │
-│  ML Classifier                        │
-│   │                                   │
-│   ▼                                   │
-│  Formatting Engine                    │
-│   │                                   │
-│   ▼                                   │
-│  Validation                           │
-│   │                                   │
-│   ▼                                   │
-│  Formatted DOCX                       │
-│                                       │
-└───────────────────────────────────────┘
+                    YOUR MACHINE
+┌──────────────────────────────────────────┐
+│                                          │
+│  .DOCX                                   │
+│    │                                     │
+│    ▼                                     │
+│  python-docx                             │
+│    │                                     │
+│    ▼                                     │
+│  Feature Extraction                      │
+│    │                                     │
+│    ▼                                     │
+│  Local ML Model                           │
+│    │                                     │
+│    ▼                                     │
+│  Rules + Formatting                      │
+│    │                                     │
+│    ▼                                     │
+│  Validation                              │
+│    │                                     │
+│    ▼                                     │
+│  Formatted .DOCX                         │
+│                                          │
+└──────────────────────────────────────────┘
 ```
 
-The Python processing pipeline does not require a cloud AI service or LLM to analyze the manuscript.
+The core engine does **not** require a generative AI model, LLM or cloud document-processing service.
 
-> **Note:** The Word add-in loads Microsoft's `office.js` library to communicate with Word. The actual document parsing, classification, formatting and validation pipeline runs locally.
+### One important distinction
+
+The Word add-in loads Microsoft's `office.js` library from Microsoft's hosted URL because Office.js needs to communicate with the Word host.
+
+That is separate from the document-processing engine:
+
+**Office.js → Word integration**
+
+**Local Python engine → parsing, ML, formatting and validation**
 
 ---
 
 # 🏗️ Architecture
 
 ```text
-                    ┌─────────────────────┐
-                    │   Word Add-in       │
-                    │   Task Pane         │
-                    └──────────┬──────────┘
-                               │
-                    ┌──────────▼──────────┐
-                    │ Local HTTPS Server  │
-                    │ Flask               │
-                    └──────────┬──────────┘
-                               │
-              ┌────────────────▼────────────────┐
-              │         DocFlow Engine         │
-              │                                │
-              │  DOCX Parser                   │
-              │       ↓                        │
-              │  ML Classifier                 │
-              │       ↓                        │
-              │  Rule Verification             │
-              │       ↓                        │
-              │  Formatting Engine             │
-              │       ↓                        │
-              │  Validation                    │
-              └────────────────┬───────────────┘
-                               │
-                               ▼
-                     Publication-Ready DOCX
+                         ┌──────────────────────┐
+                         │   MICROSOFT WORD     │
+                         │      TASK PANE       │
+                         └──────────┬───────────┘
+                                    │
+                                    │ HTTPS / localhost
+                                    ▼
+                         ┌──────────────────────┐
+                         │    FLASK SERVER      │
+                         │  Local REST API      │
+                         └──────────┬───────────┘
+                                    │
+                                    ▼
+             ┌──────────────────────────────────────────┐
+             │             DOCFLOW ENGINE               │
+             │                                          │
+             │   DOCX Parser                            │
+             │        ↓                                 │
+             │   Feature Extraction                     │
+             │        ↓                                 │
+             │   ML Classifier                          │
+             │        ↓                                 │
+             │   Rule Verification                      │
+             │        ↓                                 │
+             │   Formatting Engine                      │
+             │        ↓                                 │
+             │   Integrity Validation                   │
+             └────────────────────┬─────────────────────┘
+                                  │
+                                  ▼
+                         ┌──────────────────┐
+                         │ Formatted .DOCX │
+                         └──────────────────┘
 ```
 
-The standalone browser interface uses the same local engine.
+The standalone browser page connects to the same local server and processing engine.
 
 ---
 
-# 🧰 Tech Stack
+# 🧰 Technology
 
-### Core
-
-- Python
-- `python-docx`
-- NumPy
-- scikit-learn
-- Joblib
-
-### Backend
-
-- Flask
-- Local HTTPS server
-- REST API
-
-### Document Processing
-
-- Microsoft Word `.docx`
-- OOXML
-- python-docx
-
-### Frontend
-
-- HTML
-- CSS
-- JavaScript
-- Microsoft Office.js
-
-### Packaging
-
-- PyInstaller
-- Self-signed local HTTPS certificate
+| Layer | Technology |
+|---|---|
+| **Language** | Python |
+| **Document model** | DOCX / OOXML |
+| **DOCX processing** | `python-docx` |
+| **ML** | scikit-learn |
+| **Model** | Random Forest classifier |
+| **Serialization** | Joblib |
+| **Server** | Flask |
+| **Word integration** | Office.js |
+| **Frontend** | HTML / CSS / JavaScript |
+| **Packaging** | PyInstaller |
+| **Local HTTPS** | Self-signed development certificate |
 
 ---
 
-# 📁 Project Structure
+# 📁 Repository Map
 
 ```text
 DocFlow/
 │
 ├── engine/
-│   ├── docx_parser.py
-│   ├── classifier_stub.py
-│   ├── formatting_engine.py
-│   ├── validation.py
-│   ├── main_pipeline.py
+│   ├── docx_parser.py          # DOCX → structural features
+│   ├── classifier_stub.py      # model inference + rule overrides
+│   ├── formatting_engine.py    # publication formatting
+│   ├── validation.py           # integrity validation
+│   ├── main_pipeline.py        # pipeline orchestration
 │   └── requirements.txt
 │
 ├── model/
-│   ├── train.ipynb
-│   ├── feature_spec.md
+│   ├── train.ipynb             # training / evaluation notebook
+│   ├── feature_spec.md         # feature contract
 │   └── artifacts/
 │       ├── classifier.joblib
 │       ├── scaler.joblib
+│       ├── training_data.csv
 │       ├── evaluation_report.md
 │       └── confusion_matrix.png
 │
 ├── addin/
-│   ├── manifest.xml
-│   ├── taskpane.html
+│   ├── manifest.xml             # Word add-in manifest
+│   ├── taskpane.html            # Word task pane
 │   ├── taskpane.js
-│   ├── standalone.html
+│   ├── standalone.html          # browser mode
 │   ├── standalone.js
 │   ├── taskpane.css
 │   └── assets/
 │
 ├── server/
-│   ├── app.py
-│   └── certs.py
+│   ├── app.py                   # local HTTPS server + API
+│   └── certs.py                 # certificate generation
 │
 ├── scripts/
 │   ├── run_all_samples.py
@@ -489,25 +627,31 @@ DocFlow/
 │   └── compare_before_after_html.py
 │
 ├── samples/
+│   ├── manuscript_01.docx
+│   ├── manuscript_01_formatted.docx
+│   ├── ...
+│   └── scale_test_manuscript.docx
+│
+├── deployment_delivery/
+│   └── DEPLOYMENT.md
 │
 ├── build_exe.py
 ├── trust_certificate.ps1
-├── requirements.txt
-└── README.md
+└── requirements.txt
 ```
 
 ---
 
 # 🚀 Quick Start
 
-## 1. Clone the repository
+## 1. Clone
 
 ```bash
 git clone https://github.com/Jidnyasa-P/DocFlow.git
 cd DocFlow
 ```
 
-## 2. Create a virtual environment
+## 2. Create the environment
 
 ### Windows
 
@@ -523,47 +667,69 @@ python -m venv venv
 source venv/bin/activate
 ```
 
-## 3. Install dependencies
+## 3. Install the engine dependencies
 
 ```bash
 pip install -r engine/requirements.txt
 ```
 
-## 4. Run the local processing pipeline
+> Keep the pinned `scikit-learn` version used by the trained model. If the model is retrained with a different version, update the dependency together with the model artifacts.
+
+## 4. Format a sample manuscript
 
 ```bash
 cd engine
 python main_pipeline.py ../samples/manuscript_01.docx ../samples/manuscript_01_formatted.docx
 ```
 
-The pipeline will:
+The pipeline runs:
 
 ```text
-Parse
-  ↓
-Classify
-  ↓
-Format
-  ↓
-Validate
-  ↓
-Generate DOCX
+PARSE → CLASSIFY → VERIFY → FORMAT → VALIDATE
 ```
 
 ---
 
-# 🧪 Run the Sample Suite
+# 🧪 Testing & Evaluation
+
+## Run all samples
+
+From the repository root:
 
 ```bash
-cd ..
 python scripts/run_all_samples.py
 ```
 
-The repository contains sample documents and formatted outputs for evaluating the system.
+## Generate a large test manuscript
+
+```bash
+python scripts/build_scale_test_doc.py --target-pages 400
+```
+
+## Profile performance
+
+```bash
+python scripts/profile_performance.py samples/scale_test_manuscript.docx --out performance_report.md
+```
+
+## Generate a before/after comparison
+
+```bash
+python engine/main_pipeline.py samples/manuscript_03.docx samples/manuscript_03_formatted.docx
+python scripts/compare_before_after_html.py samples/manuscript_03.docx samples/manuscript_03_formatted.docx samples/manuscript_03_comparison.html
+```
+
+If LibreOffice and the required rendering utilities are available, the comparison can include rendered page images; otherwise the comparison falls back to formatting-oriented output.
 
 ---
 
-# 🖥️ Run the Word Add-in
+# 📝 Running the Word Add-in
+
+Install the Python environment first, then install Flask if needed:
+
+```powershell
+pip install flask
+```
 
 Start the local server:
 
@@ -571,110 +737,120 @@ Start the local server:
 python server\app.py
 ```
 
-Then load the provided `addin/manifest.xml` into Word using the Office add-in sideloading workflow.
-
-Once loaded:
+The server exposes the local DocFlow application at:
 
 ```text
-Open manuscript
-      ↓
-Open DocFlow
-      ↓
-Format Manuscript
-      ↓
-Review proof
-      ↓
-Download formatted document
+https://localhost:3000
 ```
 
-For complete Word setup and sideloading instructions, see:
+### Word
 
-`addin/ADDIN_README.md`
+Load:
+
+```text
+addin/manifest.xml
+```
+
+Then open a manuscript and use the **DocFlow** task pane.
+
+Detailed setup, sideloading and troubleshooting instructions are available in:
+
+```text
+addin/ADDIN_README.md
+```
 
 ---
 
-# 🌐 Standalone Browser Mode
+# 🌐 Running Standalone Mode
 
-With the local server running, open the standalone application using the route configured by the server.
+With the server running, open:
+
+```text
+https://localhost:3000/app
+```
 
 Then:
 
-1. Choose a `.docx` manuscript
-2. Let DocFlow process it
-3. Review the before/after proof
-4. Check validation status
-5. Download the formatted `.docx`
+1. Select a `.docx` manuscript
+2. Wait for processing
+3. Review the proof
+4. Check validation
+5. Download the formatted document
+
+No Word add-in sideloading is required.
 
 ---
 
 # 📦 Packaging
 
-DocFlow can be packaged into a standalone Windows distribution using PyInstaller.
+DocFlow can be packaged into a standalone Windows executable:
 
 ```powershell
 pip install pyinstaller cryptography
 python build_exe.py
 ```
 
-The generated distribution contains the application, processing engine, trained model and required runtime components.
+The packaging workflow is documented in:
+
+```text
+deployment_delivery/DEPLOYMENT.md
+```
 
 ---
 
-# 🛣️ Future Directions
+# 🛣️ Roadmap
 
-Potential extensions include:
+The current engine uses a fixed publication specification. Natural extensions include:
 
-- 📚 Multiple publication templates
-- 🏛️ Journal-specific formatting profiles
-- 🎓 Academic thesis formatting
-- 📰 Conference and proceedings templates
-- 🎨 Custom style presets
-- 🧩 More advanced DOCX structure recognition
-- 📑 Additional citation and reference styles
-- 🔎 Improved handling of complex layouts
-- 🖥️ Cross-platform packaging
-- 📊 Expanded evaluation datasets
-
----
-
-# 📊 Project Highlights
-
-| | |
-|---|---|
-| **10** | Document Classes |
-| **16** | Structural Features |
-| **96.7%** | Test Accuracy |
-| **99.0% ± 1.3%** | Cross-Validation Accuracy |
-| **4,675** | Elements Processed |
-| **785+ / sec** | Processing Throughput |
-| **5.95 sec** | Large-Document Processing Time |
+- [ ] Multiple publication templates
+- [ ] Journal-specific formatting profiles
+- [ ] Thesis/dissertation templates
+- [ ] Conference/proceedings templates
+- [ ] Custom formatting profiles
+- [ ] Expanded document-structure classes
+- [ ] More robust handling of complex DOCX layouts
+- [ ] Additional citation/reference styles
+- [ ] Cross-platform distribution
+- [ ] Larger and more diverse evaluation datasets
 
 ---
 
-# 💡 Design Philosophy
+# 🔬 Engineering Principles
 
-> **Formatting should be structural, repeatable and verifiable — not a manual cleanup task.**
+DocFlow is intentionally built around a few principles:
 
-Rather than generating or rewriting manuscript content, DocFlow focuses on understanding document structure and applying deterministic presentation rules.
+### 01 — Structure before styling
 
-That separation keeps the system:
+The system first asks **"What is this element?"** and only then asks **"How should it look?"**
 
-**Predictable → Local → Auditable → Reproducible**
+### 02 — ML where patterns matter
+
+Formatting signals and document context are useful for recognizing semantic roles.
+
+### 03 — Rules where certainty exists
+
+Explicit DOCX structures should not be left to probability.
+
+### 04 — Formatting should be reversible in principle
+
+The engine changes presentation rather than rewriting manuscript content.
+
+### 05 — Validate the output
+
+A generated document is not considered successful simply because it opens. Its content and structure are checked after transformation.
 
 ---
 
-# 📄 License
+<div align="center">
 
-Add your preferred license here before making the repository public.
+## DOCFLOW
 
----
+### **Understand the document. Format the structure. Verify the result.**
 
-<p align="center">
+`DOCX` · `ML` · `Rules` · `OOXML` · `Word Add-in` · `Local Processing`
 
-### DocFlow
+<br>
 
-**From manuscript chaos to consistent typesetting.**
+**Built with Python · scikit-learn · python-docx · Flask · Office.js**
 
-Built with Python · scikit-learn · python-docx · Flask · Office.js
-
-</p>
+</div>
